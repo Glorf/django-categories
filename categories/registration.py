@@ -2,8 +2,8 @@
 These functions handle the adding of fields to other models
 """
 from django.db.models import FieldDoesNotExist
-import fields
-from settings import FIELD_REGISTRY, MODEL_REGISTRY
+from . import fields
+from .settings import FIELD_REGISTRY, MODEL_REGISTRY
 
 
 def register_m2m(model, field_name='categories', extra_params={}):
@@ -39,13 +39,13 @@ def _process_registry(registry, call_func):
     from django.core.exceptions import ImproperlyConfigured
     from django.db.models.loading import get_model
 
-    for key, value in registry.items():
+    for key, value in list(registry.items()):
         model = get_model(*key.split('.'))
         if model is None:
             raise ImproperlyConfigured(_('%(key) is not a model') % {'key' : key})
         if isinstance(value, (tuple, list)):
             for item in value:
-                if isinstance(item, basestring):
+                if isinstance(item, str):
                     call_func(model, item)
                 elif isinstance(item, dict):
                     field_name = item.pop('name')
@@ -53,7 +53,7 @@ def _process_registry(registry, call_func):
                 else:
                     raise ImproperlyConfigured(_("%(settings) doesn't recognize the value of %(key)") %
                                                {'settings' : 'CATEGORY_SETTINGS', 'key' : key})
-        elif isinstance(value, basestring):
+        elif isinstance(value, str):
             call_func(model, value)
         elif isinstance(value, dict):
             field_name = value.pop('name')

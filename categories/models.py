@@ -1,6 +1,5 @@
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.utils.encoding import force_unicode
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.core.files.storage import get_storage_class
@@ -11,6 +10,7 @@ from .settings import (RELATION_MODELS, RELATIONS, THUMBNAIL_UPLOAD_PATH,
                         THUMBNAIL_STORAGE)
 
 from .base import CategoryBase
+from functools import reduce
 
 STORAGE = get_storage_class(THUMBNAIL_STORAGE)
 
@@ -55,7 +55,7 @@ class Category(CategoryBase):
             return self.alternate_url
         prefix = reverse('categories_tree_list')
         ancestors = list(self.get_ancestors()) + [self, ]
-        return prefix + '/'.join([force_unicode(i.slug) for i in ancestors]) + '/'
+        return prefix + '/'.join([i.slug for i in ancestors]) + '/'
 
     if RELATION_MODELS:
         def get_related_content_type(self, content_type):
@@ -133,7 +133,7 @@ class CategoryRelation(models.Model):
     objects = CategoryRelationManager()
 
     def __unicode__(self):
-        return u"CategoryRelation"
+        return "CategoryRelation"
 
 try:
     from south.db import db  # South is required for migrating. Need to check for it
