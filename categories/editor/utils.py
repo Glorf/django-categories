@@ -6,11 +6,11 @@ Copied from django.contrib.admin.util
 from django.forms.forms import pretty_name
 from django.db import models
 from django.db.models.related import RelatedObject
-from django.utils.encoding import force_unicode, smart_unicode, smart_str
-from django.utils.translation import get_date_formats
+from django.utils.encoding import force_unicode, smart_str
 from django.utils.text import capfirst
 from django.utils import dateformat
 from django.utils.html import escape
+from django.utils import formats
 import collections
 
 
@@ -104,7 +104,9 @@ def display_for_field(value, field):
         return EMPTY_CHANGELIST_VALUE
     elif isinstance(field, models.DateField) or isinstance(field, models.TimeField):
         if value:
-            (date_format, datetime_format, time_format) = get_date_formats()
+            date_format = formats.get_format('DATE_FORMAT')
+            datetime_format = formats.get_format('DATETIME_FORMAT')
+            time_format = formats.get_format('TIME_FORMAT')
             if isinstance(field, models.DateTimeField):
                 return capfirst(dateformat.format(value, datetime_format))
             elif isinstance(field, models.TimeField):
@@ -122,4 +124,4 @@ def display_for_field(value, field):
     elif isinstance(field, models.FloatField):
         return escape(value)
     else:
-        return smart_unicode(value)
+        return smart_str(value)
