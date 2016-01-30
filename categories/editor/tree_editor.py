@@ -80,7 +80,7 @@ class TreeChangeList(ChangeList):
         else:
             return []
 
-    def get_query_set(self, *args, **kwargs):
+    def get_queryset(self, *args, **kwargs):
         qs = super(TreeChangeList, self).get_query_set(*args, **kwargs).order_by('tree_id', 'lft')
         return qs
 
